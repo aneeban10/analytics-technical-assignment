@@ -24,4 +24,8 @@ object AggregateQueryDaoTest extends IOSuite {
   test("count the number of masked messages") { db =>
     db.maskedMessagesCount.map(count => expect.same(0, count))
   }
+
+  test("count the number of escalated messages") { db =>
+    db.escalatedMessagesCount.map(count => expect(count > 0))
+  }
 }
