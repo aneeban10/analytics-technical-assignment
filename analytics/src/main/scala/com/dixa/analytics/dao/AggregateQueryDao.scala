@@ -13,6 +13,12 @@ class AggregateQueryDao private (xa: Transactor[IO]):
       .unique
       .transact(xa)
 
+  def conversationTagsCount: IO[Long] =
+    fr"""SELECT COUNT(*) FROM converstaion_tags"""
+      .query[Long]
+      .unique
+      .transact(xa)
+
   def messagesCount: IO[Long] =
     fr"""SELECT COUNT(*) FROM messages"""
       .query[Long]

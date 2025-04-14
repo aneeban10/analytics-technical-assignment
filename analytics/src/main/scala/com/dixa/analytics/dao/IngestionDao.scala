@@ -29,6 +29,19 @@ class IngestionDao(xa: Transactor[IO]):
         logger.error(s"Failed to insert conversation: $conversation. SqlState: $sqlState") *> IO.pure(0)
       }
 
+  def insert(conversationTag: ConversationTag): IO[Int] =
+    fr"""INSERT INTO converstaion_tags (tag_id, created_at, conversation_id, tag_name)
+        |VALUES (
+        |  ${conversationTag.tagId},
+        |  ${conversationTag.createdAt},
+        |  ${conversationTag.conversationId},
+        |  ${conversationTag.tagName}
+        |) ON CONFLICT DO NOTHING""".stripMargin.update.run
+      .transact(xa)
+      .exceptSqlState { sqlState =>
+        logger.error(s"Failed to insert conversation_tag: $conversationTag. SqlState: $sqlState") *> IO.pure(0)
+      }
+
   def insert(message: Message): IO[Int] =
     fr"""INSERT INTO messages (id, conversation_id, created_at, direction, body, author)
         |VALUES (
@@ -41,7 +54,17 @@ class IngestionDao(xa: Transactor[IO]):
         |) ON CONFLICT DO NOTHING""".stripMargin.update.run
       .transact(xa)
       .exceptSqlState { sqlState =>
-        logger.error(s"Failed to insert conversation: $message. SqlState: $sqlState") *> IO.pure(0)
+        logger.error(s"Failed to insert message: $message. SqlState: $sqlState") *> IO.pure(0)
+      }
+
+  def delete(conversationTag: ConversationTag): IO[Int] =
+    fr"""DELETE FROM converstaion_tags
+        |WHERE tag_id = ${conversationTag.tagId}
+        |AND conversation_id = ${conversationTag.conversationId}
+        |""".stripMargin.update.run
+      .transact(xa)
+      .exceptSqlState { sqlState =>
+        logger.error(s"Failed to insert conversation_tag: $conversationTag. SqlState: $sqlState") *> IO.pure(0)
       }
 
 object IngestionDao:

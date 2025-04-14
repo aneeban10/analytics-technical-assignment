@@ -13,6 +13,10 @@ object AggregateQueryDaoTest extends IOSuite {
     db.conversationCount.map(count => expect.same(5000, count))
   }
 
+  test("count the number of conversation tags") { db =>
+    db.conversationTagsCount.map(count => expect(count > 0))
+  }
+
   test("count the number of messages") { db =>
     db.messagesCount.map(count => expect(count > 0))
   }
