@@ -29,6 +29,21 @@ class IngestionDao(xa: Transactor[IO]):
         logger.error(s"Failed to insert conversation: $conversation. SqlState: $sqlState") *> IO.pure(0)
       }
 
+  def insert(message: Message): IO[Int] =
+    fr"""INSERT INTO messages (id, conversation_id, created_at, direction, body, author)
+        |VALUES (
+        |  ${message.id},
+        |  ${message.conversationId},
+        |  ${message.createdAt},
+        |  ${message.direction},
+        |  ${message.body},
+        |  ${message.author}
+        |) ON CONFLICT DO NOTHING""".stripMargin.update.run
+      .transact(xa)
+      .exceptSqlState { sqlState =>
+        logger.error(s"Failed to insert conversation: $message. SqlState: $sqlState") *> IO.pure(0)
+      }
+
 object IngestionDao:
 
   def create: Resource[IO, IngestionDao] = Database.create(recreate = true).map(IngestionDao(_))

@@ -13,6 +13,18 @@ class AggregateQueryDao private (xa: Transactor[IO]):
       .unique
       .transact(xa)
 
+  def messagesCount: IO[Long] =
+    fr"""SELECT COUNT(*) FROM messages"""
+      .query[Long]
+      .unique
+      .transact(xa)
+
+  def maskedMessagesCount: IO[Long] =
+    fr"""SELECT COUNT(*) FROM messages WHERE body='<masked>'"""
+      .query[Long]
+      .unique
+      .transact(xa)
+
 object AggregateQueryDao:
 
   def create: Resource[IO, AggregateQueryDao] = Database.create().map(AggregateQueryDao(_))
