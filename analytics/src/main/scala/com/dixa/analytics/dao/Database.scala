@@ -47,7 +47,7 @@ object Database:
         |)""".stripMargin.update.run.transact(xa)
 
   private def createConversationTagTable(xa: Transactor[IO]): IO[Int] =
-    fr"""CREATE TABLE IF NOT EXISTS converstaion_tags (
+    fr"""CREATE TABLE IF NOT EXISTS conversation_tags (
         |  tag_id UUID NOT NULL,
         |  created_at TIMESTAMP NOT NULL,
         |  conversation_id INTEGER NOT NULL,

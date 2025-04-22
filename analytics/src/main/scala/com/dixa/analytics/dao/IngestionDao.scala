@@ -30,7 +30,7 @@ class IngestionDao(xa: Transactor[IO]):
       }
 
   def insert(conversationTag: ConversationTag): IO[Int] =
-    fr"""INSERT INTO converstaion_tags (tag_id, created_at, conversation_id, tag_name)
+    fr"""INSERT INTO conversation_tags (tag_id, created_at, conversation_id, tag_name)
         |VALUES (
         |  ${conversationTag.tagId},
         |  ${conversationTag.createdAt},
@@ -58,7 +58,7 @@ class IngestionDao(xa: Transactor[IO]):
       }
 
   def delete(conversationTag: ConversationTag): IO[Int] =
-    fr"""DELETE FROM converstaion_tags
+    fr"""DELETE FROM conversation_tags
         |WHERE tag_id = ${conversationTag.tagId}
         |AND conversation_id = ${conversationTag.conversationId}
         |""".stripMargin.update.run
