@@ -46,6 +46,17 @@ object Database:
         |  assignee UUID
         |)""".stripMargin.update.run.transact(xa)
 
+  private def createConversationTagTable(xa: Transactor[IO]): IO[Int] =
+    fr"""CREATE TABLE IF NOT EXISTS conversation_tags (
+        |  tag_id UUID NOT NULL,
+        |  created_at TIMESTAMP NOT NULL,
+        |  conversation_id INTEGER NOT NULL,
+        |  tag_name TEXT NOT NULL,
+        |
+        |  PRIMARY KEY (tag_id, conversation_id),
+        |  FOREIGN KEY (conversation_id) REFERENCES conversations(id)
+        |)""".stripMargin.update.run.transact(xa)
+
   private def createMessageTable(xa: Transactor[IO]): IO[Int] =
     fr"""CREATE TABLE IF NOT EXISTS messages (
         |  id INTEGER NOT NULL,
@@ -61,5 +72,6 @@ object Database:
 
   private def createTables(xa: Transactor[IO]): IO[Unit] = for {
     _ <- createConversationTable(xa)
+    _ <- createConversationTagTable(xa)
     _ <- createMessageTable(xa)
   } yield ()

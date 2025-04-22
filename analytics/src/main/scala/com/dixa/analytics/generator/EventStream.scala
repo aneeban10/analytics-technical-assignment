@@ -25,9 +25,8 @@ object EventStream:
           .fold(List.empty[(Int, Instant)]) { case (acc, id) =>
             val lastTimestamp = acc.headOption.map(_._2).getOrElse(c.createdAt)
             val nextTimestamp = lastTimestamp.plusSeconds(random.between(0, 172800)) // 0-2 days in seconds
-            (id, nextTimestamp) :: acc
+            acc :+ (id, nextTimestamp)
           }
-          .map(_.reverse) // Restore chronological order
           .flatMap(fs2.Stream.emits(_))
           .map { case (id, createdAt) =>
             generateMessage(c, id, createdAt, c.initialDirection)
