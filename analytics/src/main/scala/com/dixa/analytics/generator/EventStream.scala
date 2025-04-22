@@ -31,7 +31,6 @@ object EventStream:
           .map { case (id, createdAt) =>
             generateMessage(c, id, createdAt, c.initialDirection)
           }
-          .filter(_.body != "<masked>")
           .map(Insert(_))
 
         val tags = fs2.Stream
